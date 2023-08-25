@@ -16,11 +16,13 @@ class CollectiveController extends Controller
 
     public function index()
     {
+        $categories = Categorie::all();
         $collectives = Collective::where('user_id', auth()->user()->id)
             ->latest()->paginate(10);
 
         return view('collectives.index')->with([
-            'collectives' => $collectives
+            'collectives' => $collectives,
+            'categories' => $categories
         ]);
     }
 
@@ -33,8 +35,10 @@ class CollectiveController extends Controller
         ]);
     }
 
+
     public function store(CollectiveRequest $request)
     {
+
         $data = $request->validated();
         $data['user_id'] = auth()->user()->id;
         $data['slug'] = Str::slug($request->titre);
@@ -43,6 +47,7 @@ class CollectiveController extends Controller
         return response()->json([
 			'status' => 200,
 		]);
+
     }
 
     public function show(Collective $collective)
@@ -63,22 +68,22 @@ class CollectiveController extends Controller
     }
     public function edit($id) {
 		$collective = Collective::find($id);
+        
 		return response()->json($collective);
 	}
 
     public function update(Request $request)
     {
         $collective = Collective::find($request->id);
+        
         if ($collective->owner($collective->user_id)) {
             $this->validate($request, [
                 'titre' => 'required|unique:collectives,id,' . $collective->id,
                 'description' => 'required',
                 'category_id' => 'required|numeric'
             ]);
-            /*$data = $request->except('_token', '_method');
-            $data['user_id'] = auth()->user()->id;
-            $data['slug'] = Str::slug($request->titre);*/
-            $data = [
+        
+              $data = [
                 'user_id' => auth()->user()->id,
                 'slug' => Str::slug($request->titre),
                 'titre' => $request->titre, 
@@ -102,7 +107,7 @@ class CollectiveController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Collective mis à jour avec succès.'
+            'message' => 'Collective supprimé avec succès...'
         ], 200);
 		
     }

@@ -23,14 +23,18 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        //
+        $collectives = Collective::all();
+        $categories = Categorie::all();
         $questions = Question::where('user_id', auth()->user()->id)
             ->latest()->paginate(10);
 
         return view('questions.index')->with([
-            'questions' => $questions
+            'questions' => $questions,
+            'collectives' => $collectives,
+            'categories' => $categories
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -63,12 +67,14 @@ class QuestionController extends Controller
             'body' => 'required',
             'category_id' => 'required|numeric'
         ]);
+        
         $data = $request -> except('_token');
         $data['user_id'] =auth()->user()->id;
         $data['slug'] = Str::slug($request->titre);
         Question::create($data);
-        return redirect()->route('questions.index')->with([
-            'success' => 'Question ajoutée avec succès.'
+        
+        return response()->json([
+            'status' => 200,
         ]);
 
     }
@@ -93,17 +99,11 @@ class QuestionController extends Controller
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function edit(Question $question)
+    public function edit($id)
     {
-        //
-        $categories = Categorie::all();
-        $collectives = Collective::all();
-
-        return view('questions.edit')->with([
-            'collectives' => $collectives,
-            'categories' => $categories,
-            'questions' => $question
-        ]);
+        $question = Question::find($id);
+        
+        return response()->json($question);
     }
 
     /**
@@ -113,22 +113,32 @@ class QuestionController extends Controller
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Question $question)
+    public function update(Request $request)
     {
-        //
+        $question = Question::find($request->id);
         if($question ->owner($question->user_id)){
             $this->validate($request,[
                 'titre' => 'required|min:10|unique:questions,id,'.$question->id,
                 'body' => 'required|min:10',
                 'category_id' => 'required|numeric'
             ]);
-            $data = $request -> except('_token','_method');
-            $data['user_id'] =auth()->user()->id;
-            $data['slug'] = Str::slug($request->titre);
+
+            //$data = $request -> except('_token','_method');
+            $data = [
+                'user_id' => auth()->user()->id,
+                'slug' => Str::slug($request->titre),
+                //'body' => $request->body,
+                //'category_id' => $request->category_id,
+                //'collective_id' => $request->collective_id
+            ];
+
             $question->update($data);
-            return redirect()->route('questions.index')->with([
-                'success' => 'Question mise à jour avec succès.'
+            
+            return response()->json([
+                'status' => 200,
             ]);
+        
+        
         }
         abort(403);
     }
@@ -139,16 +149,18 @@ class QuestionController extends Controller
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Question $question)
+    public function destroy(Request $request)
     {
-        //
-        if($question ->owner($question->user_id)){
-            $question->delete();
-            return redirect()->route('questions.index')->with([
-                'success' => 'Question supprimé avec succès.'
-            ]);
-        }
-        abort(403);
+
+        $id = $request->id;
+        Question::find($id);
+        Question::destroy($id);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Question supprimé avec succès...'
+            ], 200); 
+    
     }
 
     public function voteUp($id){
@@ -165,6 +177,17 @@ class QuestionController extends Controller
 
         $comments = Commentaire::where('question_id',$id)->with('user')->latest()->get();
         return response()->json($comments);
+    }
+
+    public function validateQuestion($id) {
+        $question = Question::find($id);
+    
+        if ($question) {
+            $question->update(['validation' => true]); // Marquer la question comme validée
+            return response()->json(['success' => true, 'message' => 'Question validée avec succès']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Question non trouvée'], 404);
+        }
     }
 
 }

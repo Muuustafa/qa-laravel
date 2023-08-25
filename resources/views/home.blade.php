@@ -11,7 +11,7 @@
                 <div class="card">
                     <div class="card-header">{{ __('Dernieres questions') }}</div>
 
-                    <div class="card-body">
+                    <div class="card-body shadow">
                         <ul class="list-group">
                             @foreach($questions as $question)
                                 <hr>
@@ -48,7 +48,7 @@
                 <div class="card">
                     <div class="card-header">{{ __('Categories') }}</div>
 
-                    <div class="card-body">
+                    <div class="card-body shadow">
                         <ul class="list-group">
                            @foreach($categories as $category)
                                 <li class="list-group-item d-flex justify-content-between">

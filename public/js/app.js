@@ -5368,14 +5368,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+// Import d'Axios pour les appels API
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'App',
+  name: 'CommentComponent',
   props: ['question_id', 'user_id', 'verified_user', 'validation'],
   data: function data() {
     return {
       body: '',
       comments: [],
-      to: !this.user_id && !this.verified_user ? '/login' : '/email/verify'
+      to: !this.user_id && !this.verified_user ? '/login' : '/email/verify',
+      disableValidationButtons: false
     };
   },
   mounted: function mounted() {
@@ -5383,9 +5394,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     showAlert: function showAlert() {
-      alert("Vous avez validé ce commentaire!");
+      Swal.fire('Vous avez validé ce commentaire!', '', 'success');
     },
-    addComments: function addComments() {
+    addComment: function addComment() {
       var _this = this;
 
       var comment = {
@@ -5393,7 +5404,7 @@ __webpack_require__.r(__webpack_exports__);
         question_id: this.question_id,
         user_id: this.user_id
       };
-      axios.post("/api/comments/add", comment).then(function (res) {
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/comments/add", comment).then(function (res) {
         if (res.data.succès) {
           _this.body = '';
 
@@ -5406,11 +5417,25 @@ __webpack_require__.r(__webpack_exports__);
     getComments: function getComments() {
       var _this2 = this;
 
-      axios.get("/api/question/".concat(this.question_id, "/comments")).then(function (res) {
-        _this2.comments = res.data;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get("/api/question/".concat(this.question_id, "/comments")).then(function (res) {
+        _this2.comments = res.data.map(function (comment) {
+          return _objectSpread(_objectSpread({}, comment), {}, {
+            validated: false
+          });
+        });
       })["catch"](function (err) {
         return console.log(err);
       });
+    },
+    validateComment: function validateComment(comment) {
+      // Exemple de logique de validation : valider si la longueur du commentaire est supérieure à 10 caractères
+      if (comment.body.length > 10) {
+        comment.validated = true;
+        this.disableValidationButtons = true;
+        Swal.fire('Commentaire validé!', '', 'success');
+      } else {
+        Swal.fire('Le commentaire doit contenir au moins 10 caractères.', '', 'error');
+      }
     }
   }
 });
@@ -5428,31 +5453,41 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+// Import d'Axios pour les appels API
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['votes', 'id'],
+  // Propriétés reçues par le composant
   data: function data() {
     return {
-      questionVotes: 0
+      questionVotes: 0 // Le nombre de votes de la question
+
     };
   },
   mounted: function mounted() {
-    this.questionVotes = this.votes;
+    this.questionVotes = this.votes; // Initialiser les votes de la question avec les votes reçus
   },
   methods: {
+    // Méthode pour voter vers le haut
     voteUp: function voteUp() {
       var _this = this;
 
-      axios.get("/api/questions/".concat(this.id, "/voteup")).then(function (res) {
-        _this.questionVotes++;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get("/api/questions/".concat(this.id, "/voteup")) // Appel GET à l'API pour voter positivement
+      .then(function (res) {
+        _this.questionVotes++; // Incrémenter le nombre de votes de la question
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+    // Méthode pour voter vers le bas
     voteDown: function voteDown() {
       var _this2 = this;
 
-      axios.get("/api/questions/".concat(this.id, "/votedown")).then(function (res) {
-        _this2.questionVotes--;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get("/api/questions/".concat(this.id, "/votedown")) // Appel GET à l'API pour voter négativement
+      .then(function (res) {
+        _this2.questionVotes--; // Décrémenter le nombre de votes de la question
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -5485,10 +5520,8 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "col-md-12"
   }, [_c("div", {
-    staticClass: "card"
-  }, [_c("div", {
-    staticClass: "card-header"
-  }, [_vm._v("\n                Commentaires\n            ")]), _vm._v(" "), _c("div", {
+    staticClass: "card shadow"
+  }, [_vm._m(0), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_vm.user_id && _vm.verified_user ? _c("div", [_c("div", {
     staticClass: "form-group mb-3"
@@ -5523,39 +5556,50 @@ var render = function render() {
       value: _vm.body.length,
       expression: "body.length"
     }],
-    staticClass: "btn btn-sm btn-dark",
+    staticClass: "btn btn-sm btn-success",
     on: {
-      click: _vm.addComments
+      click: _vm.addComment
     }
-  }, [_vm._v("Envoyer")])])]) : _c("div", [_c("a", {
+  }, [_vm._v("\n              " + _vm._s(_vm.disableValidationButtons ? "Commentaire validé" : "Envoyer") + "\n            ")])])]) : _c("div", [_c("a", {
     staticClass: "btn btn-link",
     attrs: _defineProperty({
       href: "/login"
     }, "href", _vm.to)
-  }, [_vm._v("\n                        Connectez-vous pour commenter./ Vérifier votre compte.\n                    ")])]), _vm._v(" "), _vm.comments.length ? _c("ul", {
+  }, [_vm._v("\n            Connectez-vous pour commenter / Vérifiez votre compte.\n          ")])]), _vm._v(" "), _vm.comments.length ? _c("ul", {
     staticClass: "list-group"
   }, _vm._l(_vm.comments, function (comment, index) {
     return _c("li", {
       key: index,
       staticClass: "list-group-item d-flex flex-column"
-    }, [_c("span", [_c("b", [_vm._v(_vm._s(comment.user.name) + ": ")]), _c("i", [_vm._v(_vm._s(comment.body))])]), _vm._v(" "), _c("span", [_vm._v(_vm._s(comment.created_at))]), _vm._v(" "), _vm.validation ? _c("div", {
+    }, [_c("span", [_c("b", [_vm._v(_vm._s(comment.user.name) + ":")]), _vm._v(" "), _c("i", [_vm._v(_vm._s(comment.body))])]), _vm._v(" "), _c("span", [_vm._v(_vm._s(comment.created_at))]), _vm._v(" "), _vm.validation ? _c("div", {
       attrs: {
         id: "app"
       }
-    }, [_c("span", [_c("button", {
+    }, [_c("span", [!comment.validated && !_vm.disableValidationButtons ? _c("button", {
       staticClass: "btn btn-sm btn-success",
       on: {
         click: function click($event) {
-          return _vm.showAlert();
+          return _vm.validateComment(comment);
         }
       }
-    }, [_vm._v("Valider")])])]) : _vm._e()]);
+    }, [_vm._v("\n                  Valider\n                ")]) : comment.validated ? _c("i", {
+      staticClass: "fas fa-check-circle text-success"
+    }) : _vm._e()])]) : _vm._e()]);
   }), 0) : _c("div", {
     staticClass: "alert alert-dark"
-  }, [_vm._v("\n                    Aucun commentaire pour l'instant!\n                ")])])])])]);
+  }, [_vm._v("\n          Aucun commentaire pour l'instant!\n        ")])])])])]);
 };
 
-var staticRenderFns = [];
+var staticRenderFns = [function () {
+  var _vm = this,
+      _c = _vm._self._c;
+
+  return _c("div", {
+    staticClass: "card-header bg-danger justify-content-between align-items-center"
+  }, [_c("h3", {
+    staticClass: "text-light"
+  }, [_vm._v(" Commentaires ")])]);
+}];
 render._withStripped = true;
 
 
@@ -5580,7 +5624,7 @@ var render = function render() {
   return _c("div", {
     staticClass: "col-md-2"
   }, [_c("div", {
-    staticClass: "card"
+    staticClass: "card shadow"
   }, [_c("div", {
     staticClass: "card-header text-center"
   }, [_c("i", {
@@ -5595,7 +5639,7 @@ var render = function render() {
     staticClass: "card-body text-center"
   }, [_c("span", {
     staticClass: "fw-bold"
-  }, [_vm._v("\n                " + _vm._s(_vm.questionVotes) + "\n            ")])]), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.questionVotes))])]), _vm._v(" "), _c("div", {
     staticClass: "card-footer text-center"
   }, [_c("i", {
     staticClass: "fas fa-chevron-down fw-bold",
@@ -5645,6 +5689,10 @@ Vue.component('comment-component', (__webpack_require__(/*! ./components/Comment
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+
+var app = new Vue({
+  el: '#app'
+});
 
 /***/ }),
 
@@ -40524,6 +40572,18 @@ Vue.compile = compileToFunctions;
 /******/ 				}
 /******/ 			}
 /******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	
