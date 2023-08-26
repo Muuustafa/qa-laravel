@@ -5394,11 +5394,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: {
     showAlert: function showAlert() {
+      // Affiche une alerte de succès
       Swal.fire('Vous avez validé ce commentaire!', '', 'success');
     },
     addComment: function addComment() {
       var _this = this;
 
+      // Ajoute un commentaire en appelant une API
       var comment = {
         body: this.body,
         question_id: this.question_id,
@@ -5417,6 +5419,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     getComments: function getComments() {
       var _this2 = this;
 
+      // Récupère les commentaires en appelant une API
       axios__WEBPACK_IMPORTED_MODULE_0___default().get("/api/question/".concat(this.question_id, "/comments")).then(function (res) {
         _this2.comments = res.data.map(function (comment) {
           return _objectSpread(_objectSpread({}, comment), {}, {
@@ -5428,7 +5431,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     validateComment: function validateComment(comment) {
-      // Exemple de logique de validation : valider si la longueur du commentaire est supérieure à 10 caractères
+      // Valide un commentaire en fonction de la longueur du texte
       if (comment.body.length > 10) {
         comment.validated = true;
         this.disableValidationButtons = true;
@@ -5560,7 +5563,7 @@ var render = function render() {
     on: {
       click: _vm.addComment
     }
-  }, [_vm._v("\n              " + _vm._s(_vm.disableValidationButtons ? "Commentaire validé" : "Envoyer") + "\n            ")])])]) : _c("div", [_c("a", {
+  }, [_vm._v("\n              " + _vm._s(_vm.disableValidationButtons ? "Commentaire validé" : "Envoyer") + "\n              ")])])]) : _c("div", [_c("a", {
     staticClass: "btn btn-link",
     attrs: _defineProperty({
       href: "/login"

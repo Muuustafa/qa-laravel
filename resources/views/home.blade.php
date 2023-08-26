@@ -8,8 +8,8 @@
     <div class="container">
         <div class="row my-5">
             <div class="col-md-9">
-                <div class="card">
-                    <div class="card-header">{{ __('Dernieres questions') }}</div>
+                <div class="card shadow">
+                    <div class="card-header text-light bg-danger">{{ __('Dernieres questions') }}</div>
 
                     <div class="card-body shadow">
                         <ul class="list-group">
@@ -45,8 +45,8 @@
             </div>
 
             <div class="col-md-3">
-                <div class="card">
-                    <div class="card-header">{{ __('Categories') }}</div>
+                <div class="card shadow">
+                    <div class="card-header text-light bg-danger">{{ __('Categories') }}</div>
 
                     <div class="card-body shadow">
                         <ul class="list-group">

@@ -238,7 +238,7 @@ $("#add_question_form").submit(function(e) {
      var id = $(this).data('id');
      
      // Remplir les champs du formulaire avec les détails de la question
-     $.get('/questionEdit/' + id, function(data) {
+     $.get('/question/' + id, function(data) {
          $('#id').val(data.id);
          $('#collective_id').val(data.collective_id);
          $('#category_id').val(data.category_id);
@@ -248,7 +248,7 @@ $("#add_question_form").submit(function(e) {
  });
  // Lorsqu'on clique sur "Enregistrer les modifications"
  $(document).on('click', '#edit_question_btn', function(e) {
-     e.preventDefault();
+     e.preventDefault();  // Empêche le lien de rediriger vers une autre page
      var formData = $('#edit_question_form').serialize();
      var id = $('#id').val();
      // Validation des champs
@@ -256,9 +256,10 @@ $("#add_question_form").submit(function(e) {
      var titre = $('#titre').val();
      var description = $('#floatingTextarea2').val();
      var category_id = $('#category_id').val();
+
      // Envoyer les modifications via Ajax
      $.ajax({
-         url: '/questionUpdate/' + id,
+         url: '/question/' + id,
          type: 'PUT',
          data: formData,
          success: function(data) {

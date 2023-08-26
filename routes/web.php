@@ -33,5 +33,5 @@ Route::put('/collective/{id}', [CollectiveController::class, 'update']);
 Route::delete('/destroy', [QuestionController::class, 'destroy'])->name('delete');
 Route::get('/edit', [QuestionController::class, 'edit'])->name('edit');
 Route::post('/update', [QuestionController::class, 'update'])->name('update');
-Route::get('/questionEdit/{id}', [QuestionController::class, 'edit']);
-Route::put('/questionUpdate/{id}', [QuestionController::class, 'update'])->name('questions.update');
+Route::get('/question/{id}', [QuestionController::class, 'edit']);
+Route::put('/question/{id}', [QuestionController::class, 'update']);

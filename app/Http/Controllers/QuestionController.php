@@ -116,6 +116,7 @@ class QuestionController extends Controller
     public function update(Request $request)
     {
         $question = Question::find($request->id);
+
         if($question ->owner($question->user_id)){
             $this->validate($request,[
                 'titre' => 'required|min:10|unique:questions,id,'.$question->id,
@@ -123,22 +124,22 @@ class QuestionController extends Controller
                 'category_id' => 'required|numeric'
             ]);
 
-            //$data = $request -> except('_token','_method');
-            $data = [
+            $data = $request -> except('_token','_method');
+           /* $data = [
                 'user_id' => auth()->user()->id,
                 'slug' => Str::slug($request->titre),
-                //'body' => $request->body,
-                //'category_id' => $request->category_id,
-                //'collective_id' => $request->collective_id
-            ];
+                'body' => $request->body,
+                'category_id' => $request->category_id,
+                'collective_id' => $request->collective_id
+            ];*/
+            $data['user_id'] =auth()->user()->id;
+            $data['slug'] = Str::slug($request->titre);
 
             $question->update($data);
             
             return response()->json([
                 'status' => 200,
             ]);
-        
-        
         }
         abort(403);
     }
